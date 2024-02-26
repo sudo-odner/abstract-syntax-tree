@@ -2,6 +2,11 @@ package main
 
 import "fmt"
 
+var (
+	accessNumber     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
+	accessOperations = []string{"+", "-", "/", "*", "^", "(", ")"}
+)
+
 func stringInString(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -11,11 +16,36 @@ func stringInString(a string, list []string) bool {
 	return false
 }
 
-func clearInput(data string) []string {
+func getOperationPath(list []string) []int64 {
 	var (
-		accessNumber     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
-		accessOperations = []string{"+", "-", "/", "*", "^", "(", ")"}
+		arrayIdx       []int64
+		firstPriority  = []string{"^"}
+		secondPriority = []string{"*", "/"}
+		thirdPriority  = []string{"+", "-"}
 	)
+
+	for idx, data := range list {
+		if stringInString(data, firstPriority) {
+			arrayIdx = append(arrayIdx, int64(idx))
+		}
+	}
+
+	for idx, data := range list {
+		if stringInString(data, secondPriority) {
+			arrayIdx = append(arrayIdx, int64(idx))
+		}
+	}
+
+	for idx, data := range list {
+		if stringInString(data, thirdPriority) {
+			arrayIdx = append(arrayIdx, int64(idx))
+		}
+	}
+
+	return arrayIdx
+}
+
+func clearInput(data string) []string {
 	var (
 		dataNumberAndOperations []string
 		flag                    bool
@@ -39,7 +69,7 @@ func clearInput(data string) []string {
 }
 
 func main() {
-	fmt.Println(clearInput("12 + 4 - 5a"))
+	fmt.Println(clearInput("12 + 4 - 5a * 4"))
 }
 
 // +, -, /, *, ^, (, )
@@ -47,9 +77,27 @@ func main() {
 /*
 	3 + 4 / 3 - 18 ^ ( 2 * 5 )
 	["3", "+", "4", "/", "3", "-", "18", "^", "(", "2", "*", "5", ")"]
+	(3 * 2) + (3 / 3) + 4
+              +
+         /         \
+        +         4
+     /     \
+     *     /
+	/ \   / \
+	3 2   3 3
++
+|--> +
+|    |--> *
+|	 |    |
+|    |    |--> 3
+|    |	  |
+|	 |    |--> 2
+|  	 |
+|	 |--> /
+|		  |--> 3
+|		  |
+|		  |--> 3
+|
+|--> 4
 
-
-	  *
-	/   \ /   \
-	2	5 	5
 */
