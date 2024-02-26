@@ -41,31 +41,51 @@ func clearInput(data string) []string {
 	return dataNumberAndOperations
 }
 
+// Функция для сортировки массива по первому элементу массива матрицы
+// Данную функцию можно поменять или улучшить по произодитльности и скорости
+func sortedByFirstIdx(data [][]int64) [][]int64 {
+	for i := 0; i < len(data); i++ {
+		for j := 0; j < (len(data) - i); j++ {
+			if j != 0 {
+				if data[j-1][0] > data[j][0] {
+					data[j-1], data[j] = data[j], data[j-1]
+				}
+			}
+		}
+	}
+	return data
+}
+
 // Генерация списка последовательности выполнения операций, где элемен это операция,
 // а его индекс это приоретет выполения
 func getOperationPath(list []string) []int64 {
-	var (
-		arrayIdx       []int64
-		firstPriority  = []string{"^"}
-		secondPriority = []string{"*", "/"}
-		thirdPriority  = []string{"+", "-"}
-	)
+	var arrayIdx []int64
+	raiseFlag := 0
+	var arrayFilter [][]int64
+
 	for idx, data := range list {
-		if stringInString(data, thirdPriority) {
-			arrayIdx = append(arrayIdx, int64(idx))
+		switch data {
+		case "(":
+			raiseFlag += 4
+		case ")":
+			raiseFlag -= 4
+		case "^":
+			arrayFilter = append(arrayFilter, []int64{int64(3 + raiseFlag), int64(idx)})
+		case "*":
+			arrayFilter = append(arrayFilter, []int64{int64(2 + raiseFlag), int64(idx)})
+		case "/":
+			arrayFilter = append(arrayFilter, []int64{int64(2 + raiseFlag), int64(idx)})
+		case "+":
+			arrayFilter = append(arrayFilter, []int64{int64(1 + raiseFlag), int64(idx)})
+		case "-":
+			arrayFilter = append(arrayFilter, []int64{int64(1 + raiseFlag), int64(idx)})
 		}
 	}
 
-	for idx, data := range list {
-		if stringInString(data, secondPriority) {
-			arrayIdx = append(arrayIdx, int64(idx))
-		}
-	}
+	arrayFilter = sortedByFirstIdx(arrayFilter)
 
-	for idx, data := range list {
-		if stringInString(data, firstPriority) {
-			arrayIdx = append(arrayIdx, int64(idx))
-		}
+	for _, data := range arrayFilter {
+		arrayIdx = append(arrayIdx, data[1])
 	}
 
 	return arrayIdx
@@ -126,7 +146,20 @@ func sumParts(mainLine []string, leftPart, rightPart [][]string) [][]string {
 	return newArr
 }
 
-func printElementTree(arrayNumAndOpr []string) [][]string {
+func deleteBracket(data []string) []string {
+	var newData []string
+	for _, word := range data {
+		if !(stringInString(word, []string{"(", ")"})) {
+			newData = append(newData, word)
+		}
+	}
+	return newData
+}
+
+func tree(arrayNumAndOpr []string) [][]string {
+	if len(arrayNumAndOpr) == 0 {
+		return [][]string{}
+	}
 	if len(arrayNumAndOpr) == 1 {
 		return [][]string{
 			{arrayNumAndOpr[0], " "},
@@ -138,9 +171,11 @@ func printElementTree(arrayNumAndOpr []string) [][]string {
 	)
 	leftPart, rightPart := arrayNumAndOpr[:(lastIdxArrayIdxPriority)], arrayNumAndOpr[(lastIdxArrayIdxPriority+1):]
 
-	if len(leftPart) == 1 && len(rightPart) == 1 {
+	cleanLeftPart, cleanRightPart := deleteBracket(leftPart), deleteBracket(rightPart)
+
+	if len(cleanLeftPart) == 1 && len(cleanRightPart) == 1 {
 		return [][]string{
-			{" ", " ", leftPart[0], " ", rightPart[0], " "},
+			{" ", " ", cleanLeftPart[0], " ", cleanRightPart[0], " "},
 			{" ", " ", " ", " ", " ", " "},
 			{" ", " ", ">", " ", ">", " "},
 			{" ", " ", "-", " ", "-", " "},
@@ -149,7 +184,7 @@ func printElementTree(arrayNumAndOpr []string) [][]string {
 		}
 	}
 
-	leftPartAnswer, rightPartAnswer := printElementTree(leftPart), printElementTree(rightPart)
+	leftPartAnswer, rightPartAnswer := elementTree(leftPart), elementTree(rightPart)
 
 	var lineOpr []string
 	for i := 0; i < len(leftPartAnswer[0])+len(rightPartAnswer[0]); i++ {
@@ -168,8 +203,11 @@ func printElementTree(arrayNumAndOpr []string) [][]string {
 	return answer
 }
 
+func printTree(data string) {
+
+}
 func main() {
-	fmt.Println(printElementTree(clearInput("12 + 4 - 5a * 4")))
+	fmt.Println(tree(clearInput("1+3-4")))
 }
 
 // +, -, /, *, ^, (, )
