@@ -1,9 +1,23 @@
 package main
 
+// Проверяет существует ли елемент в слайсе
+func existsInSlice[T comparable](value T, array []T) bool {
+	for _, valueArray := range array {
+		if valueArray == value {
+			return true
+		}
+	}
+	return false
+}
+
 // Копирование матрицы рамером 2
 func copy2DArray[T any](array [][]T) [][]T {
+	if len(array) == 0 {
+		return array
+	}
 	newArray := make([][]T, len(array), cap(array))
 	for idx := range array {
+		newArray[idx] = make([]T, len(array[idx]), cap(array[idx]))
 		copy(newArray[idx][:], array[idx][:])
 	}
 
@@ -12,30 +26,51 @@ func copy2DArray[T any](array [][]T) [][]T {
 
 // Транспонирование матрицы
 func transposition2DArray[T any](array [][]T) [][]T {
-	copyArray := copy2DArray(array)
 	if len(array) == 0 {
-		return copyArray
+		return array
+	}
+	lenY, lenX := len(array), len(array[0])
+
+	var maxLen int
+	if lenY > lenX {
+		maxLen = lenY
+	} else {
+		maxLen = lenX
 	}
 
-	lenY, lenX := len(array), len(array[0])
+	// Создание квадратной матрицы для удобного транспонирования
+	copyArray := make([][]T, maxLen)
+	for idx := range array {
+		copyArray[idx] = make([]T, maxLen)
+		copy(copyArray[idx][:], array[idx][:])
+	}
+
+	// Транспонирование матрицы
 	for idxY := range lenY {
 		for idxX := range lenX {
-			copyArray[idxY][idxX] = array[idxX][idxY]
+			copyArray[idxX][idxY] = array[idxY][idxX]
 		}
 	}
 
-	return copyArray
+	// Обрезка матрицы от мусора
+	copyCutArray := make([][]T, lenX)
+	for idxX := range lenX {
+		copyCutArray[idxX] = make([]T, lenY)
+		copy(copyCutArray[idxX][:], copyArray[idxX][:])
+	}
+
+	return copyCutArray
 }
 
 // Разворачивает матрицу по вертикали
 func reverce2DArrayByVertical[T any](array [][]T) [][]T {
-	copyArray := copy2DArray(array)
 	if len(array) == 0 {
-		return copyArray
+		return array
 	}
+	copyArray := copy2DArray(array)
 
 	lenY := len(array)
-	for idxY := range lenY / 2 {
+	for idxY := range lenY {
 		copy(copyArray[idxY][:], array[(lenY - idxY - 1)][:])
 	}
 
@@ -44,14 +79,14 @@ func reverce2DArrayByVertical[T any](array [][]T) [][]T {
 
 // Разворачивает матрицу по вертикали
 func reverce2DArrayByHorizontal[T any](array [][]T) [][]T {
-	copyArray := copy2DArray(array)
 	if len(array) == 0 {
-		return copyArray
+		return array
 	}
+	copyArray := copy2DArray(array)
 
 	lenY, lenX := len(array), len(array[0])
 	for idxY := range lenY {
-		for idxX := range lenX / 2 {
+		for idxX := range lenX {
 			copyArray[idxY][idxX] = array[idxY][(lenX - idxX - 1)]
 		}
 	}
