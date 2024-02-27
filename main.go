@@ -251,19 +251,6 @@ func main() {
 	printTree("5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))")
 }
 
-//func printTree(data string) {
-//	arrTree := createArrTree(cleanAndConvertString(data))
-//	for _, data := range arrTree {
-//		fmt.Println(data)
-//	}
-//	//fmt.Println()
-//	//arrTree = reverse(arrTree)
-//	//arrTree = transposition(arrTree)
-//	//for _, data := range arrTree {
-//	//	fmt.Println(data)
-//	//}
-//}
-
 // +, -, /, *, ^, (, )
 
 /*
@@ -286,6 +273,7 @@ func main() {
 |	 |    |--> 2
 |  	 |
 |	 |--> /
+|         |
 |		  |--> 3
 |		  |
 |		  |--> 3
@@ -293,55 +281,3 @@ func main() {
 |--> 4
 
 */
-//func checkNumber(num string, list []string) bool {
-//	for _, elementNum := range num {
-//		for _, elementList := range list {
-//			if string(elementNum) != elementList {
-//				return false
-//			}
-//		}
-//	}
-//	return true
-//}
-
-// Удалить если получиться код ниже
-//
-//func transposition(data [][]string) [][]string {
-//	var newData [][]string
-//
-//	for i := range data {
-//		copy(newData[i][:], newData[i][:])
-//	}
-//
-//	for y := range newData {
-//		for x := range newData {
-//			data[y][x] = newData[x][y]
-//		}
-//	}
-//	return data
-//}
-//
-//// First array small, second big
-//func sumSmallAndBigSlice(smallArr, bigArr [][]string) [][]string {
-//	if len(smallArr[0]) > len(bigArr[0]) {
-//		// Отладка
-//	}
-//
-//	var newArr [][]string
-//	for _, data1 := range smallArr {
-//		var newLineSmallArr []string
-//		var flag = len(bigArr[0])
-//		for _, data2 := range data1 {
-//			newLineSmallArr = append(newLineSmallArr, data2)
-//			flag--
-//		}
-//		for i := 0; i < flag; i++ {
-//			newLineSmallArr = append(newLineSmallArr, " ")
-//		}
-//		newArr = append(newArr, newLineSmallArr)
-//	}
-//	for _, data1 := range bigArr {
-//		newArr = append(newArr, data1)
-//	}
-//	return newArr
-//}
