@@ -87,7 +87,7 @@ func getOperationPath(list []string) []int64 {
 }
 
 // Совмещение трех блоков
-func sumParts(mainLine []string, leftPart, rightPart [][]string) [][]string {
+func sumParts(leftPart, rightPart [][]string) [][]string {
 	var newArr [][]string
 
 	if len(leftPart) < len(rightPart) {
@@ -123,7 +123,6 @@ func sumParts(mainLine []string, leftPart, rightPart [][]string) [][]string {
 		}
 		newArr = append(newArr, lineNewArr)
 	}
-	newArr = append(newArr, mainLine)
 
 	return newArr
 }
@@ -145,10 +144,10 @@ func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 	}
 	if len(deleteBracket(arrayNumAndOpr)) == 1 {
 		return [][]string{
-			{arrayNumAndOpr[0], " "},
-			{">", " "},
-			{"-", " "},
-			{"-", " "},
+			{" ", arrayNumAndOpr[0]},
+			{" ", ">"},
+			{" ", "-"},
+			{" ", "-"},
 		}
 	}
 
@@ -161,42 +160,81 @@ func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 
 	if len(cleanLeftPart) == 1 && len(cleanRightPart) == 1 {
 		return [][]string{
-			{" ", " ", cleanLeftPart[0], " ", cleanRightPart[0], " "},
+			{" ", " ", " ", cleanLeftPart[0], " ", cleanRightPart[0]},
 			{" ", " ", " ", " ", " ", " "},
-			{" ", " ", ">", " ", ">", " "},
-			{" ", " ", "-", " ", "-", " "},
-			{" ", " ", "-", " ", "-", " "},
-			{arrayNumAndOpr[IdxPriority], "|", "|", "|", "|", " "},
+			{" ", " ", " ", ">", " ", ">"},
+			{" ", " ", " ", "-", " ", "-"},
+			{" ", " ", " ", "-", " ", "-"},
+			{" ", arrayNumAndOpr[IdxPriority], "|", "|", "|", "|"},
+			{" ", ">", " ", " ", " ", " "},
+			{" ", "-", " ", " ", " ", " "},
+			{" ", "-", " ", " ", " ", " "},
 		}
 	}
 
 	leftPartAnswer, rightPartAnswer := createBaseArrTree(leftPart), createBaseArrTree(rightPart)
-	lenXBloсk := len(leftPartAnswer[0]) + len(rightPartAnswer[0])
+	answer := sumParts(leftPartAnswer, rightPartAnswer)
 
-	var lineOpr []string
-	for i := 0; i < lenXBloсk; i++ {
-		switch i {
-		case 0:
-			lineOpr = append(lineOpr, arrayNumAndOpr[IdxPriority])
-		case lenXBloсk - 1:
-			lineOpr = append(lineOpr, " ")
-		default:
-			lineOpr = append(lineOpr, "|")
-
+	lineOpre := make([]string, len(answer[0]))
+	for i := range lineOpre {
+		if i >= (len(answer[0])-4) && len(leftPartAnswer) != 4 {
+			lineOpre[i] = " "
+		} else {
+			lineOpre[i] = "|"
 		}
 	}
-	answer := sumParts(lineOpr, leftPartAnswer, rightPartAnswer)
+
+	answer = append(answer, lineOpre)
+
+	answer = transposition2DArray(answer)
+	answer = reverce2DArrayByVertical(answer)
+	lineSpace := make([]string, len(answer[0]))
+	for i := range lineSpace {
+		if i == len(lineSpace)-1 {
+			lineSpace[i] = arrayNumAndOpr[IdxPriority]
+		} else {
+			lineSpace[i] = " "
+		}
+	}
+	answer = append(answer, lineSpace)
+
+	lineSpace = make([]string, len(answer[0]))
+	for i := range lineSpace {
+		lineSpace[i] = " "
+	}
+	answer = append(answer, lineSpace)
+	answer = reverce2DArrayByVertical(answer)
+	answer = transposition2DArray(answer)
+
+	// написатоь чтуку
+	printOpreVisual := make([]string, len(answer[0]))
+	for i := range printOpreVisual {
+		if i == 1 {
+			printOpreVisual[i] = ">"
+		} else {
+			printOpreVisual[i] = " "
+		}
+	}
+	answer = append(answer, printOpreVisual)
+
+	printOpreVisual = make([]string, len(answer[0]))
+	for i := range printOpreVisual {
+		if i == 1 {
+			printOpreVisual[i] = "-"
+		} else {
+			printOpreVisual[i] = " "
+		}
+	}
+	answer = append(answer, printOpreVisual)
+	answer = append(answer, printOpreVisual)
 
 	return answer
 }
 
 func printTree(inputData string) {
 	cleanInputData := cleanAndConvertString(inputData)
+	fmt.Println(cleanInputData)
 	mainFrame := createBaseArrTree(cleanInputData)
-	for _, dat := range mainFrame {
-		fmt.Println(dat)
-	}
-
 	mainFrame = transposition2DArray(mainFrame)
 	mainFrame = reverce2DArrayByHorizontal(mainFrame)
 	for _, dat := range mainFrame {
@@ -206,6 +244,7 @@ func printTree(inputData string) {
 
 func main() {
 	printTree("5+(3+1)^((1+1)+(6-7))")
+	//printTree("5+(3+1)^((1+1)+(6-7)^(23+1-(3-1)))")
 }
 
 //func printTree(data string) {
