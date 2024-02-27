@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math"
 )
 
 var (
@@ -9,32 +10,23 @@ var (
 	accessOperations = []string{"+", "-", "/", "*", "^", "(", ")"}
 )
 
-func stringInString(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
-}
-
-func clearInput(data string) []string {
+// Чистка от символов отличных от accessNumber и accessOperations и запись чисел и операций в массив
+func cleanAndConvertString(inputData string) []string {
 	var (
 		dataNumberAndOperations []string
 		flag                    bool
 	)
 
 	flag = false
-	for _, word := range data {
-		if stringInString(string(word), accessNumber) || stringInString(string(word), accessOperations) {
-			flag = flag && !(stringInString(string(word), accessOperations))
-			fmt.Println(flag, string(word))
+	for _, word := range inputData {
+		if existsInSlice(string(word), accessNumber) || existsInSlice(string(word), accessOperations) {
+			flag = flag && !(existsInSlice(string(word), accessOperations))
 			if flag {
 				dataNumberAndOperations[len(dataNumberAndOperations)-1] += string(word)
 			} else {
 				dataNumberAndOperations = append(dataNumberAndOperations, string(word))
 			}
-			flag = stringInString(dataNumberAndOperations[len(dataNumberAndOperations)-1], accessNumber)
+			flag = existsInSlice(dataNumberAndOperations[len(dataNumberAndOperations)-1], accessNumber)
 		}
 	}
 
@@ -43,7 +35,8 @@ func clearInput(data string) []string {
 
 // Функция для сортировки массива по первому элементу массива матрицы
 // Данную функцию можно поменять или улучшить по произодитльности и скорости
-func sortedByFirstIdx(data [][]int64) [][]int64 {
+// Пока что это сортировка пузырьком
+func sortArrByFirstIdx(data [][]int64) [][]int64 {
 	for i := 0; i < len(data); i++ {
 		for j := 0; j < (len(data) - i); j++ {
 			if j != 0 {
@@ -59,10 +52,10 @@ func sortedByFirstIdx(data [][]int64) [][]int64 {
 // Генерация списка последовательности выполнения операций, где элемен это операция,
 // а его индекс это приоретет выполения
 func getOperationPath(list []string) []int64 {
-	var arrayIdx []int64
-	raiseFlag := 0
-	var arrayFilter [][]int64
+	// Массив типа [[приорететность операции, индекс операции], [приорететность операции, индекс операции]]
+	var arrayPriorityAndIdx [][]int64
 
+	raiseFlag := 0
 	for idx, data := range list {
 		switch data {
 		case "(":
@@ -70,41 +63,27 @@ func getOperationPath(list []string) []int64 {
 		case ")":
 			raiseFlag -= 4
 		case "^":
-			arrayFilter = append(arrayFilter, []int64{int64(3 + raiseFlag), int64(idx)})
+			arrayPriorityAndIdx = append(arrayPriorityAndIdx, []int64{int64(3 + raiseFlag), int64(idx)})
 		case "*":
-			arrayFilter = append(arrayFilter, []int64{int64(2 + raiseFlag), int64(idx)})
+			arrayPriorityAndIdx = append(arrayPriorityAndIdx, []int64{int64(2 + raiseFlag), int64(idx)})
 		case "/":
-			arrayFilter = append(arrayFilter, []int64{int64(2 + raiseFlag), int64(idx)})
+			arrayPriorityAndIdx = append(arrayPriorityAndIdx, []int64{int64(2 + raiseFlag), int64(idx)})
 		case "+":
-			arrayFilter = append(arrayFilter, []int64{int64(1 + raiseFlag), int64(idx)})
+			arrayPriorityAndIdx = append(arrayPriorityAndIdx, []int64{int64(1 + raiseFlag), int64(idx)})
 		case "-":
-			arrayFilter = append(arrayFilter, []int64{int64(1 + raiseFlag), int64(idx)})
+			arrayPriorityAndIdx = append(arrayPriorityAndIdx, []int64{int64(1 + raiseFlag), int64(idx)})
 		}
 	}
+	arrayPriorityAndIdx = reverce2DArrayByVertical(arrayPriorityAndIdx)
 
-	arrayFilter = sortedByFirstIdx(arrayFilter)
+	var arrayIdx []int64
 
-	for _, data := range arrayFilter {
+	arrayPriorityAndIdx = sortArrByFirstIdx(arrayPriorityAndIdx)
+	for _, data := range arrayPriorityAndIdx {
 		arrayIdx = append(arrayIdx, data[1])
 	}
 
 	return arrayIdx
-}
-
-// Объедениение 2 одномерных массивов по горизонтали
-func sumStringSlice(first, second []string) []string {
-	sizeNewSlice := len(first) + len(second)
-	newSlice := make([]string, 0, sizeNewSlice)
-
-	for _, data := range first {
-		newSlice = append(newSlice, data)
-	}
-
-	for _, data := range second {
-		newSlice = append(newSlice, data)
-	}
-
-	return newSlice
 }
 
 // Совмещение трех блоков
@@ -122,16 +101,19 @@ func sumParts(mainLine []string, leftPart, rightPart [][]string) [][]string {
 		fakeSlice = append(fakeSlice, " ")
 	}
 
-	for idxY, _ := range leftPart {
-		lenLineNewArr := len(rightPart[0]) + len(rightPart[0])
+	for idxY := range leftPart {
+		lenLineNewArr := len(rightPart[0]) + len(leftPart[0])
 		lineNewArr := make([]string, 0, lenLineNewArr)
 
 		for _, data := range leftPart[idxY] {
 			lineNewArr = append(lineNewArr, data)
 		}
 
-		if idxY >= (len(leftPart) - len(rightPart)) {
-			for _, data := range rightPart[((len(leftPart) - len(rightPart)) - idxY)] {
+		idxRightWithLeftRight := len(leftPart) - len(rightPart)
+		idxRight := int64(math.Abs(float64((len(leftPart) - idxY) - len(rightPart))))
+
+		if idxY >= idxRightWithLeftRight {
+			for _, data := range rightPart[idxRight] {
 				lineNewArr = append(lineNewArr, data)
 			}
 		} else {
@@ -146,31 +128,35 @@ func sumParts(mainLine []string, leftPart, rightPart [][]string) [][]string {
 	return newArr
 }
 
+// Удаление из массива скобок
 func deleteBracket(data []string) []string {
 	var newData []string
 	for _, word := range data {
-		if !(stringInString(word, []string{"(", ")"})) {
+		if !(existsInSlice(word, []string{"(", ")"})) {
 			newData = append(newData, word)
 		}
 	}
 	return newData
 }
 
-func tree(arrayNumAndOpr []string) [][]string {
+func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 	if len(arrayNumAndOpr) == 0 {
 		return [][]string{}
 	}
-	if len(arrayNumAndOpr) == 1 {
+	if len(deleteBracket(arrayNumAndOpr)) == 1 {
 		return [][]string{
 			{arrayNumAndOpr[0], " "},
+			{">", " "},
+			{"-", " "},
+			{"-", " "},
 		}
 	}
-	var (
-		arrayIdxPriority        = getOperationPath(arrayNumAndOpr)
-		lastIdxArrayIdxPriority = arrayIdxPriority[(len(arrayIdxPriority) - 1)]
-	)
-	leftPart, rightPart := arrayNumAndOpr[:(lastIdxArrayIdxPriority)], arrayNumAndOpr[(lastIdxArrayIdxPriority+1):]
 
+	var (
+		arrayIdxPriority = getOperationPath(arrayNumAndOpr)
+		IdxPriority      = arrayIdxPriority[0]
+	)
+	leftPart, rightPart := arrayNumAndOpr[:(IdxPriority)], arrayNumAndOpr[(IdxPriority+1):]
 	cleanLeftPart, cleanRightPart := deleteBracket(leftPart), deleteBracket(rightPart)
 
 	if len(cleanLeftPart) == 1 && len(cleanRightPart) == 1 {
@@ -180,18 +166,19 @@ func tree(arrayNumAndOpr []string) [][]string {
 			{" ", " ", ">", " ", ">", " "},
 			{" ", " ", "-", " ", "-", " "},
 			{" ", " ", "-", " ", "-", " "},
-			{arrayNumAndOpr[lastIdxArrayIdxPriority], "|", "|", "|", "|", " "},
+			{arrayNumAndOpr[IdxPriority], "|", "|", "|", "|", " "},
 		}
 	}
 
-	leftPartAnswer, rightPartAnswer := elementTree(leftPart), elementTree(rightPart)
+	leftPartAnswer, rightPartAnswer := createBaseArrTree(leftPart), createBaseArrTree(rightPart)
+	lenXBloсk := len(leftPartAnswer[0]) + len(rightPartAnswer[0])
 
 	var lineOpr []string
-	for i := 0; i < len(leftPartAnswer[0])+len(rightPartAnswer[0]); i++ {
+	for i := 0; i < lenXBloсk; i++ {
 		switch i {
 		case 0:
-			lineOpr = append(lineOpr, arrayNumAndOpr[lastIdxArrayIdxPriority])
-		case len(leftPartAnswer[0]) + len(rightPartAnswer[0]) - 1:
+			lineOpr = append(lineOpr, arrayNumAndOpr[IdxPriority])
+		case lenXBloсk - 1:
 			lineOpr = append(lineOpr, " ")
 		default:
 			lineOpr = append(lineOpr, "|")
@@ -203,12 +190,36 @@ func tree(arrayNumAndOpr []string) [][]string {
 	return answer
 }
 
-func printTree(data string) {
+func printTree(inputData string) {
+	cleanInputData := cleanAndConvertString(inputData)
+	mainFrame := createBaseArrTree(cleanInputData)
+	for _, dat := range mainFrame {
+		fmt.Println(dat)
+	}
 
+	mainFrame = transposition2DArray(mainFrame)
+	mainFrame = reverce2DArrayByHorizontal(mainFrame)
+	for _, dat := range mainFrame {
+		fmt.Println(dat)
+	}
 }
+
 func main() {
-	fmt.Println(tree(clearInput("1+3-4")))
+	printTree("5+(3+1)^((1+1)+(6-7))")
 }
+
+//func printTree(data string) {
+//	arrTree := createArrTree(cleanAndConvertString(data))
+//	for _, data := range arrTree {
+//		fmt.Println(data)
+//	}
+//	//fmt.Println()
+//	//arrTree = reverse(arrTree)
+//	//arrTree = transposition(arrTree)
+//	//for _, data := range arrTree {
+//	//	fmt.Println(data)
+//	//}
+//}
 
 // +, -, /, *, ^, (, )
 
