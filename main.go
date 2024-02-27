@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/asaskevich/govalidator"
 	"math"
 )
 
@@ -14,19 +15,19 @@ var (
 func cleanAndConvertString(inputData string) []string {
 	var (
 		dataNumberAndOperations []string
-		flag                    bool
 	)
 
-	flag = false
-	for _, word := range inputData {
+	for idx, word := range inputData {
 		if existsInSlice(string(word), accessNumber) || existsInSlice(string(word), accessOperations) {
-			flag = flag && !(existsInSlice(string(word), accessOperations))
-			if flag {
-				dataNumberAndOperations[len(dataNumberAndOperations)-1] += string(word)
+			if existsInSlice(string(word), accessNumber) {
+				if idx != 0 && govalidator.IsInt(dataNumberAndOperations[len(dataNumberAndOperations)-1]) {
+					dataNumberAndOperations[len(dataNumberAndOperations)-1] += string(word)
+				} else {
+					dataNumberAndOperations = append(dataNumberAndOperations, string(word))
+				}
 			} else {
 				dataNumberAndOperations = append(dataNumberAndOperations, string(word))
 			}
-			flag = existsInSlice(dataNumberAndOperations[len(dataNumberAndOperations)-1], accessNumber)
 		}
 	}
 
@@ -233,8 +234,11 @@ func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 
 func printTree(inputData string) {
 	cleanInputData := cleanAndConvertString(inputData)
-	fmt.Println(cleanInputData)
 	mainFrame := createBaseArrTree(cleanInputData)
+	for _, dat := range mainFrame {
+		fmt.Println(dat)
+	}
+	fmt.Println()
 	mainFrame = transposition2DArray(mainFrame)
 	mainFrame = reverce2DArrayByHorizontal(mainFrame)
 	for _, dat := range mainFrame {
@@ -243,8 +247,8 @@ func printTree(inputData string) {
 }
 
 func main() {
-	printTree("5+(3+1)^((1+1)+(6-7))")
-	//printTree("5+(3+1)^((1+1)+(6-7)^(23+1-(3-1)))")
+	//printTree("5+(3+1)^((1+1)+(6-7))")
+	printTree("5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))")
 }
 
 //func printTree(data string) {
