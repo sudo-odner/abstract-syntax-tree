@@ -2,36 +2,41 @@ package main
 
 import (
 	"fmt"
-	"github.com/asaskevich/govalidator"
 	"math"
+	"strconv"
 )
 
-var (
-	accessNumber     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0"}
-	accessOperations = []string{"+", "-", "/", "*", "^", "(", ")"}
-)
+// Проверка что строка это число
+func checkNumberInString(number string) bool {
+	_, err := strconv.ParseFloat(number, 64)
+	if err == nil {
+		return true
+	}
+	return false
+}
 
-// Чистка от символов отличных от accessNumber и accessOperations и запись чисел и операций в массив
-func cleanAndConvertString(inputData string) []string {
+// Преобразанием строки в массив операторов и чисел
+func cleanString(inputString string) []string {
 	var (
-		dataNumberAndOperations []string
+		dataNumAndOpera  []string
+		accessNumber     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."}
+		accessOperations = []string{"+", "-", "/", "*", "^", "(", ")"}
 	)
 
-	for idx, word := range inputData {
-		if existsInSlice(string(word), accessNumber) || existsInSlice(string(word), accessOperations) {
-			if existsInSlice(string(word), accessNumber) {
-				if idx != 0 && govalidator.IsInt(dataNumberAndOperations[len(dataNumberAndOperations)-1]) {
-					dataNumberAndOperations[len(dataNumberAndOperations)-1] += string(word)
-				} else {
-					dataNumberAndOperations = append(dataNumberAndOperations, string(word))
-				}
+	for _, stringRune := range inputString {
+		if existsInSlice(string(stringRune), accessNumber) {
+			if len(dataNumAndOpera) != 0 && checkNumberInString(dataNumAndOpera[len(dataNumAndOpera)-1]) {
+				dataNumAndOpera[len(dataNumAndOpera)-1] += string(stringRune)
 			} else {
-				dataNumberAndOperations = append(dataNumberAndOperations, string(word))
+				dataNumAndOpera = append(dataNumAndOpera, string(stringRune))
 			}
+		}
+		if existsInSlice(string(stringRune), accessOperations) {
+			dataNumAndOpera = append(dataNumAndOpera, string(stringRune))
 		}
 	}
 
-	return dataNumberAndOperations
+	return dataNumAndOpera
 }
 
 // Функция для сортировки массива по первому элементу массива матрицы
@@ -50,8 +55,7 @@ func sortArrByFirstIdx(data [][]int64) [][]int64 {
 	return data
 }
 
-// Генерация списка последовательности выполнения операций, где элемен это операция,
-// а его индекс это приоретет выполения
+// Генерация массива с последовательностью индексов операторов относительно строки, где индекс массива это приоретет выполеннеия с конца
 func getOperationPath(list []string) []int64 {
 	// Массив типа [[приорететность операции, индекс операции], [приорететность операции, индекс операции]]
 	var arrayPriorityAndIdx [][]int64
@@ -76,10 +80,10 @@ func getOperationPath(list []string) []int64 {
 		}
 	}
 	arrayPriorityAndIdx = reverce2DArrayByVertical(arrayPriorityAndIdx)
+	arrayPriorityAndIdx = sortArrByFirstIdx(arrayPriorityAndIdx)
 
 	var arrayIdx []int64
 
-	arrayPriorityAndIdx = sortArrByFirstIdx(arrayPriorityAndIdx)
 	for _, data := range arrayPriorityAndIdx {
 		arrayIdx = append(arrayIdx, data[1])
 	}
@@ -233,7 +237,7 @@ func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 }
 
 func printTree(inputData string) {
-	cleanInputData := cleanAndConvertString(inputData)
+	cleanInputData := cleanString(inputData)
 	mainFrame := createBaseArrTree(cleanInputData)
 	for _, dat := range mainFrame {
 		fmt.Println(dat)
