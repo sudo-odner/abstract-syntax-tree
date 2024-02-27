@@ -40,9 +40,13 @@ func transposition2DArray[T any](array [][]T) [][]T {
 
 	// Создание квадратной матрицы для удобного транспонирования
 	copyArray := make([][]T, maxLen)
-	for idx := range array {
+	for idx := range maxLen {
 		copyArray[idx] = make([]T, maxLen)
-		copy(copyArray[idx][:], array[idx][:])
+		if idx < len(array) {
+			copy(copyArray[idx][:], array[idx][:])
+		} else {
+			copy(copyArray[idx][:], array[0][:])
+		}
 	}
 
 	// Транспонирование матрицы
@@ -77,7 +81,7 @@ func reverce2DArrayByVertical[T any](array [][]T) [][]T {
 	return copyArray
 }
 
-// Разворачивает матрицу по вертикали
+// Разворачивает матрицу по горизонтали
 func reverce2DArrayByHorizontal[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
