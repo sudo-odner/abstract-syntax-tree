@@ -4,6 +4,7 @@ import (
 	"abstract-syntax-tree/internal/priorityOperator"
 	"abstract-syntax-tree/pkg"
 	"fmt"
+	"regexp"
 	"strconv"
 )
 
@@ -40,10 +41,134 @@ func cleanString(inputString string) []string {
 	return dataNumAndOpera
 }
 
-func main() {
-	someadfas := cleanString("5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))")
-	fmt.Println(priorityOperator.New(someadfas))
+func sumParts(leftPart, rightPart [][]string, opera string) [][]string {
 
+	if len(leftPart) < len(rightPart) {
+		newLeftPart := make([][]string, len(rightPart))
+
+		for i := range len(rightPart) {
+			newLeftPart[i] = make([]string, 0, len(leftPart[0]))
+			if i < len(leftPart) {
+				newLeftPart[i] = append(newLeftPart[i], leftPart[i]...)
+			} else {
+				for j := 0; j < len(leftPart[0]); j++ {
+					newLeftPart[i] = append(newLeftPart[i], " ")
+				}
+			}
+		}
+		leftPart = newLeftPart
+	} else {
+		newRightPart := make([][]string, len(leftPart))
+
+		for i := range len(leftPart) {
+			newRightPart[i] = make([]string, 0, len(rightPart[0]))
+
+			if i < len(rightPart) {
+				newRightPart[i] = append(newRightPart[i], rightPart[i]...)
+			} else {
+				for j := 0; j < len(rightPart[0]); j++ {
+					newRightPart[i] = append(newRightPart[i], " ")
+				}
+			}
+		}
+		rightPart = newRightPart
+	}
+
+	sumWithOperator := make([][]string, 0, len(leftPart)+len(rightPart))
+	line := make([]string, 0, len(leftPart[0])+len(rightPart[0]))
+	for i := range len(leftPart[0]) + len(rightPart[0]) {
+		if i == ((len(leftPart[0]) + len(rightPart[0])) / 2) {
+			line = append(line, opera)
+		} else {
+			line = append(line, " ")
+		}
+	}
+	sumWithOperator = append(sumWithOperator, line)
+
+	leftPart, rightPart = pkg.Transposition2DArray(leftPart), pkg.Transposition2DArray(rightPart)
+	sumLeftAndRightPart := append(leftPart, rightPart...)
+	sumLeftAndRightPart = pkg.Transposition2DArray(sumLeftAndRightPart)
+
+	sumWithOperator = append(sumWithOperator, sumLeftAndRightPart...)
+	return sumWithOperator
+}
+
+func createBaseArrTree(data priorityOperator.OperatorPath) [][]string {
+	if len(data.DataString) == 0 {
+		return [][]string{}
+	}
+	if len(data.DataString) == 1 {
+		return [][]string{
+			{" ", " ", "?", " ", " "},
+			{" ", " ", data.DataString[0], " ", " "},
+		}
+	}
+	idxMinPriority := data.GetMinIndexPriority()
+	leftPart, opera, rightPart := data.SplitByIndexString(idxMinPriority)
+
+	if len(leftPart.DataString) == 1 && len(rightPart.DataString) == 1 {
+		var (
+			sample     [][]string
+			sampleLine []string
+		)
+		sample = make([][]string, 3)
+
+		pattern := ""
+		regex := regexp.MustCompile(pattern)
+
+		for i := 0; i < 8; i++ {
+			switch i {
+			case 2:
+				sampleLine = append(sampleLine, regex.Split(leftPart.DataString[0], -1)...)
+			case 6:
+				sampleLine = append(sampleLine, regex.Split(rightPart.DataString[0], -1)...)
+			default:
+				sampleLine = append(sampleLine, " ")
+			}
+		}
+		sample[2] = append(sample[2], sampleLine...)
+
+		for i := 0; i < len(sampleLine); i++ {
+			if i == (len(sampleLine) / 2) {
+				sample[0] = append(sample[0], opera)
+			} else {
+				sample[0] = append(sample[0], " ")
+			}
+		}
+
+		for i := 0; i < len(sampleLine); i++ {
+			switch i {
+			case (len(leftPart.DataString[0]) + 3) / 2:
+				sample[1] = append(sample[1], "/")
+			case len(leftPart.DataString[0]) + 3 + ((len(rightPart.DataString[0]) + 3) / 2):
+				sample[1] = append(sample[1], "\\")
+			default:
+				sample[1] = append(sample[1], " ")
+			}
+		}
+		return sample
+	}
+
+	fmt.Println(opera)
+	fmt.Println(leftPart, rightPart)
+
+	leftPartAnswer, rightPartAnswer := createBaseArrTree(leftPart), createBaseArrTree(rightPart)
+	return sumParts(leftPartAnswer, rightPartAnswer, opera)
+}
+
+func printTree(inputData string) {
+	cleanInputData := cleanString(inputData)
+	mainFrame := createBaseArrTree(priorityOperator.New(cleanInputData))
+
+	for _, dat := range mainFrame {
+		fmt.Println(dat)
+	}
+	fmt.Println()
+}
+
+func main() {
+	var inputString = "5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))"
+	printTree(inputString)
 }
 
 /*
