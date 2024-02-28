@@ -99,7 +99,7 @@ func createBaseArrTree(data priorityOperator.OperatorPath) [][]string {
 	}
 	if len(data.DataString) == 1 {
 		return [][]string{
-			{" ", " ", "?", " ", " "},
+			{" ", " ", "|", " ", " "},
 			{" ", " ", data.DataString[0], " ", " "},
 		}
 	}
@@ -107,46 +107,30 @@ func createBaseArrTree(data priorityOperator.OperatorPath) [][]string {
 	leftPart, opera, rightPart := data.SplitByIndexString(idxMinPriority)
 
 	if len(leftPart.DataString) == 1 && len(rightPart.DataString) == 1 {
-		var (
-			sample     [][]string
-			sampleLine []string
-		)
-		sample = make([][]string, 3)
-
 		pattern := ""
 		regex := regexp.MustCompile(pattern)
+		mainSample := make([][]string, 3)
 
-		for i := 0; i < 8; i++ {
-			switch i {
-			case 2:
-				sampleLine = append(sampleLine, regex.Split(leftPart.DataString[0], -1)...)
-			case 6:
-				sampleLine = append(sampleLine, regex.Split(rightPart.DataString[0], -1)...)
-			default:
-				sampleLine = append(sampleLine, " ")
-			}
-		}
-		sample[2] = append(sample[2], sampleLine...)
+		lenLeft := len(leftPart.DataString[0])
+		lenRight := len(rightPart.DataString[0])
 
-		for i := 0; i < len(sampleLine); i++ {
-			if i == (len(sampleLine) / 2) {
-				sample[0] = append(sample[0], opera)
-			} else {
-				sample[0] = append(sample[0], " ")
-			}
-		}
+		mainSample[2] = append(mainSample[2], pkg.CreateArrOneElement(" ", 2)...)
+		mainSample[2] = append(mainSample[2], regex.Split(leftPart.DataString[0], -1)...)
+		mainSample[2] = append(mainSample[2], pkg.CreateArrOneElement(" ", 3)...)
+		mainSample[2] = append(mainSample[2], regex.Split(rightPart.DataString[0], -1)...)
+		mainSample[2] = append(mainSample[2], pkg.CreateArrOneElement(" ", 3)...)
 
-		for i := 0; i < len(sampleLine); i++ {
-			switch i {
-			case (len(leftPart.DataString[0]) + 3) / 2:
-				sample[1] = append(sample[1], "/")
-			case len(leftPart.DataString[0]) + 3 + ((len(rightPart.DataString[0]) + 3) / 2):
-				sample[1] = append(sample[1], "\\")
-			default:
-				sample[1] = append(sample[1], " ")
-			}
-		}
-		return sample
+		mainSample[1] = append(mainSample[1], pkg.CreateArrOneElement(" ", lenLeft+1)...)
+		mainSample[1] = append(mainSample[1], "/")
+		mainSample[1] = append(mainSample[1], pkg.CreateArrOneElement(" ", 3)...)
+		mainSample[1] = append(mainSample[1], "\\")
+		mainSample[1] = append(mainSample[1], pkg.CreateArrOneElement(" ", lenRight+1)...)
+
+		mainSample[0] = append(mainSample[0], pkg.CreateArrOneElement(" ", lenLeft+3)...)
+		mainSample[0] = append(mainSample[0], opera)
+		mainSample[0] = append(mainSample[0], pkg.CreateArrOneElement(" ", lenRight+3)...)
+
+		return mainSample
 	}
 
 	fmt.Println(opera)

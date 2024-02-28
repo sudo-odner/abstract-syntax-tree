@@ -10,6 +10,15 @@ func ExistsInSlice[T comparable](value T, array []T) bool {
 	return false
 }
 
+func CreateArrOneElement[T comparable](value T, size int) []T {
+	newArray := make([]T, 0, size)
+	for i := 0; i < size; i++ {
+		newArray = append(newArray, value)
+	}
+
+	return newArray
+}
+
 // Копирование матрицы рамером 2
 func copy2DArray[T any](array [][]T) [][]T {
 	if len(array) == 0 {
