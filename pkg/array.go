@@ -1,7 +1,7 @@
-package main
+package pkg
 
 // Проверяет существует ли елемент в слайсе
-func existsInSlice[T comparable](value T, array []T) bool {
+func ExistsInSlice[T comparable](value T, array []T) bool {
 	for _, valueArray := range array {
 		if valueArray == value {
 			return true
@@ -25,7 +25,7 @@ func copy2DArray[T any](array [][]T) [][]T {
 }
 
 // Транспонирование матрицы
-func transposition2DArray[T any](array [][]T) [][]T {
+func Transposition2DArray[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
 	}
@@ -82,7 +82,7 @@ func reverce2DArrayByVertical[T any](array [][]T) [][]T {
 }
 
 // Разворачивает матрицу по горизонтали
-func reverce2DArrayByHorizontal[T any](array [][]T) [][]T {
+func Reverce2DArrayByHorizontal[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
 	}

@@ -1,8 +1,9 @@
 package main
 
 import (
+	"abstract-syntax-tree/internal/priorityOperator"
+	"abstract-syntax-tree/pkg"
 	"fmt"
-	"math"
 	"strconv"
 )
 
@@ -24,14 +25,14 @@ func cleanString(inputString string) []string {
 	)
 
 	for _, stringRune := range inputString {
-		if existsInSlice(string(stringRune), accessNumber) {
+		if pkg.ExistsInSlice(string(stringRune), accessNumber) {
 			if len(dataNumAndOpera) != 0 && checkNumberInString(dataNumAndOpera[len(dataNumAndOpera)-1]) {
 				dataNumAndOpera[len(dataNumAndOpera)-1] += string(stringRune)
 			} else {
 				dataNumAndOpera = append(dataNumAndOpera, string(stringRune))
 			}
 		}
-		if existsInSlice(string(stringRune), accessOperations) {
+		if pkg.ExistsInSlice(string(stringRune), accessOperations) {
 			dataNumAndOpera = append(dataNumAndOpera, string(stringRune))
 		}
 	}
@@ -39,6 +40,13 @@ func cleanString(inputString string) []string {
 	return dataNumAndOpera
 }
 
+func main() {
+	someadfas := cleanString("5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))")
+	fmt.Println(priorityOperator.New(someadfas))
+
+}
+
+/*
 // Функция для сортировки массива по первому элементу массива матрицы
 // Данную функцию можно поменять или улучшить по произодитльности и скорости
 // Пока что это сортировка пузырьком
@@ -53,6 +61,38 @@ func sortArrByFirstIdx(data [][]int64) [][]int64 {
 		}
 	}
 	return data
+}
+
+func prioritizationOperation(array []string) []operator {
+	arrayOperatorStruct := make([]operator, len(array))
+	raiseFlag := 0
+	var newOperator operator
+
+	for idx, data := range array {
+		switch data {
+		case "(":
+			raiseFlag += 4
+		case ")":
+			raiseFlag -= 4
+		case "^":
+			newOperator = operator{data, idx, int(3 + raiseFlag)}
+			arrayOperatorStruct = append(arrayOperatorStruct, newOperator)
+		case "*":
+			newOperator = operator{data, idx, int(2 + raiseFlag)}
+			arrayOperatorStruct = append(arrayOperatorStruct, newOperator)
+		case "/":
+			newOperator = operator{data, idx, int(2 + raiseFlag)}
+			arrayOperatorStruct = append(arrayOperatorStruct, newOperator)
+		case "+":
+			newOperator = operator{data, idx, int(1 + raiseFlag)}
+			arrayOperatorStruct = append(arrayOperatorStruct, newOperator)
+		case "-":
+			newOperator = operator{data, idx, int(1 + raiseFlag)}
+			arrayOperatorStruct = append(arrayOperatorStruct, newOperator)
+		}
+	}
+
+	return arrayOperatorStruct
 }
 
 // Генерация массива с последовательностью индексов операторов относительно строки, где индекс массива это приоретет выполеннеия с конца
@@ -79,7 +119,7 @@ func getOperationPath(list []string) []int64 {
 			arrayPriorityAndIdx = append(arrayPriorityAndIdx, []int64{int64(1 + raiseFlag), int64(idx)})
 		}
 	}
-	arrayPriorityAndIdx = reverce2DArrayByVertical(arrayPriorityAndIdx)
+	arrayPriorityAndIdx = priorityOperator.reverce2DArrayByVertical(arrayPriorityAndIdx)
 	arrayPriorityAndIdx = sortArrByFirstIdx(arrayPriorityAndIdx)
 
 	var arrayIdx []int64
@@ -136,7 +176,7 @@ func sumParts(leftPart, rightPart [][]string) [][]string {
 func deleteBracket(data []string) []string {
 	var newData []string
 	for _, word := range data {
-		if !(existsInSlice(word, []string{"(", ")"})) {
+		if !(priorityOperator.existsInSlice(word, []string{"(", ")"})) {
 			newData = append(newData, word)
 		}
 	}
@@ -191,8 +231,8 @@ func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 
 	answer = append(answer, lineOpre)
 
-	answer = transposition2DArray(answer)
-	answer = reverce2DArrayByVertical(answer)
+	answer = priorityOperator.transposition2DArray(answer)
+	answer = priorityOperator.reverce2DArrayByVertical(answer)
 	lineSpace := make([]string, len(answer[0]))
 	for i := range lineSpace {
 		if i == len(lineSpace)-1 {
@@ -208,8 +248,8 @@ func createBaseArrTree(arrayNumAndOpr []string) [][]string {
 		lineSpace[i] = " "
 	}
 	answer = append(answer, lineSpace)
-	answer = reverce2DArrayByVertical(answer)
-	answer = transposition2DArray(answer)
+	answer = priorityOperator.reverce2DArrayByVertical(answer)
+	answer = priorityOperator.transposition2DArray(answer)
 
 	// написатоь чтуку
 	printOpreVisual := make([]string, len(answer[0]))
@@ -243,17 +283,17 @@ func printTree(inputData string) {
 		fmt.Println(dat)
 	}
 	fmt.Println()
-	mainFrame = transposition2DArray(mainFrame)
-	mainFrame = reverce2DArrayByHorizontal(mainFrame)
+	mainFrame = pkg.Transposition2DArray(mainFrame)
+	mainFrame = pkg.Reverce2DArrayByHorizontal(mainFrame)
 	for _, dat := range mainFrame {
 		fmt.Println(dat)
 	}
 }
 
-func main() {
-	//printTree("5+(3+1)^((1+1)+(6-7))")
-	printTree("5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))")
-}
+//func main() {
+//	//printTree("5+(3+1)^((1+1)+(6-7))")
+//	printTree("5+(3+1)^((1+1)+(6-7.4)^(232+1-(3-1)))")
+//}
 
 // +, -, /, *, ^, (, )
 
@@ -262,12 +302,12 @@ func main() {
 	["3", "+", "4", "/", "3", "-", "18", "^", "(", "2", "*", "5", ")"]
 	(3 * 2) + (3 / 3) + 4
               +
-         /         \
+        /         \
         +         4
      /     \
-     *     /
-	/ \   / \
-	3 2   3 3
+      *      /
+	/   \  /   \
+	3   2  3   3
 +
 |--> +
 |    |--> *
