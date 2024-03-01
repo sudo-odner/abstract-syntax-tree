@@ -42,7 +42,7 @@ func cleanString(inputString string) []string {
 }
 
 func Start() {
-	inputString := "(3 * 2) + (3 / 3) + 4"
+	inputString := "(3 * 2) + (3 / 30) + 400"
 	cleanInput := cleanString(inputString)
 	tree.Print(cleanInput)
 	fmt.Println("Answer: ", calculator.Сalculate(cleanInput))
