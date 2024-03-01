@@ -115,7 +115,7 @@ func sumPartsTreeFirstType(leftPart, rightPart [][]string, opera string) [][]str
 	return sum
 }
 
-func createBaseArrTreeFirstType(data priorityOperator.OperatorPath, way string) [][]string {
+func createBaseArrTreeFirstType(data priorityOperator.OperatorPath) [][]string {
 	if len(data.DataString) == 0 {
 		return [][]string{}
 	}
@@ -160,13 +160,13 @@ func createBaseArrTreeFirstType(data priorityOperator.OperatorPath, way string) 
 		return mainSample
 	}
 
-	leftPartAnswer, rightPartAnswer := createBaseArrTreeFirstType(leftPart, "/"), createBaseArrTreeFirstType(rightPart, "\\")
+	leftPartAnswer, rightPartAnswer := createBaseArrTreeFirstType(leftPart), createBaseArrTreeFirstType(rightPart)
 	return sumPartsTreeFirstType(leftPartAnswer, rightPartAnswer, opera)
 }
 
 func PrintTreeFirstType(inputData string) {
 	cleanInputData := cleanString(inputData)
-	mainFrame := createBaseArrTreeFirstType(priorityOperator.New(cleanInputData), "I")
+	mainFrame := createBaseArrTreeFirstType(priorityOperator.New(cleanInputData))
 
 	for _, dat := range mainFrame {
 		fmt.Println(strings.Join(dat, ""))
