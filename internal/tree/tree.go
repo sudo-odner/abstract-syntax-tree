@@ -1,53 +1,27 @@
-package treeType
+package tree
 
 import (
 	"abstract-syntax-tree/internal/priorityOperator"
 	"abstract-syntax-tree/pkg"
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 )
 
-// Проверка что строка это число
-func checkNumberInString(number string) bool {
-	_, err := strconv.ParseFloat(number, 64)
-	if err == nil {
-		return true
-	}
-	return false
-}
+// Настройки для спита
+var (
+	pattern = ""
+	regex   = regexp.MustCompile(pattern)
+)
 
-// cleanString преобразование строки в массив операторов и чисел
-func cleanString(inputString string) []string {
-	var (
-		dataNumAndOpera  []string
-		accessNumber     = []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."}
-		accessOperations = []string{"+", "-", "/", "*", "^", "(", ")"}
-	)
-
-	for _, stringRune := range inputString {
-		if pkg.ExistsInSlice(string(stringRune), accessNumber) {
-			if len(dataNumAndOpera) != 0 && checkNumberInString(dataNumAndOpera[len(dataNumAndOpera)-1]) {
-				dataNumAndOpera[len(dataNumAndOpera)-1] += string(stringRune)
-			} else {
-				dataNumAndOpera = append(dataNumAndOpera, string(stringRune))
-			}
-		}
-		if pkg.ExistsInSlice(string(stringRune), accessOperations) {
-			dataNumAndOpera = append(dataNumAndOpera, string(stringRune))
-		}
-	}
-
-	return dataNumAndOpera
-}
-
+// Создание путь (/ или \) до оператора
 func createWayOperator(part [][]string, way string) ([][]string, int) {
 	var newLineWay []string
 	var indexOpera int
 	newPart := make([][]string, 0, len(part)+2)
 
 	newLineWay = make([]string, 0, len(part[0]))
+	indexOpera = len(part[0]) / 2
 	for i := 0; i < 5; i++ {
 		check := pkg.GetFirstIndexValueInSlice(string("/*+-^"[i]), part[0])
 		if check != -1 {
@@ -64,6 +38,7 @@ func createWayOperator(part [][]string, way string) ([][]string, int) {
 	return newPart, indexOpera
 }
 
+// Сложение левой и правой части ветор относительно оператора
 func sumPartsTreeFirstType(leftPart, rightPart [][]string, opera string) [][]string {
 	if len(leftPart) < len(rightPart) {
 		difference := len(rightPart) - len(leftPart)
@@ -115,15 +90,13 @@ func sumPartsTreeFirstType(leftPart, rightPart [][]string, opera string) [][]str
 	return sum
 }
 
-func createBaseArrTreeFirstType(data priorityOperator.OperatorPath) [][]string {
+// Создание дерева
+func createBaseArrTree(data priorityOperator.OperatorPath) [][]string {
 	if len(data.DataString) == 0 {
 		return [][]string{}
 	}
 	if len(data.DataString) == 1 {
 		mainSample := make([][]string, 1)
-
-		pattern := ""
-		regex := regexp.MustCompile(pattern)
 
 		mainSample[0] = append(mainSample[0], regex.Split(data.DataString[0], -1)...)
 
@@ -134,8 +107,6 @@ func createBaseArrTreeFirstType(data priorityOperator.OperatorPath) [][]string {
 	leftPart, opera, rightPart := data.SplitByIndexString(idxMinPriority)
 
 	if len(leftPart.DataString) == 1 && len(rightPart.DataString) == 1 {
-		pattern := ""
-		regex := regexp.MustCompile(pattern)
 		mainSample := make([][]string, 3)
 
 		lenLeft := len(leftPart.DataString[0])
@@ -160,13 +131,13 @@ func createBaseArrTreeFirstType(data priorityOperator.OperatorPath) [][]string {
 		return mainSample
 	}
 
-	leftPartAnswer, rightPartAnswer := createBaseArrTreeFirstType(leftPart), createBaseArrTreeFirstType(rightPart)
+	leftPartAnswer, rightPartAnswer := createBaseArrTree(leftPart), createBaseArrTree(rightPart)
 	return sumPartsTreeFirstType(leftPartAnswer, rightPartAnswer, opera)
 }
 
-func PrintTreeFirstType(inputData string) {
-	cleanInputData := cleanString(inputData)
-	mainFrame := createBaseArrTreeFirstType(priorityOperator.New(cleanInputData))
+func Print(inputData []string) {
+	data := priorityOperator.New(inputData)
+	mainFrame := createBaseArrTree(data)
 
 	for _, dat := range mainFrame {
 		fmt.Println(strings.Join(dat, ""))
