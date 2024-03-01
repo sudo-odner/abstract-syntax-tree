@@ -8,9 +8,9 @@ type OperatorPath struct {
 }
 
 type operator struct {
-	Name       string
-	IdxInArray int
-	Priority   int
+	name       string
+	idxInArray int
+	priority   int
 }
 
 func New(std []string) OperatorPath {
@@ -29,9 +29,9 @@ func (a *OperatorPath) getMinIndexPriority() int {
 		indexMinPriority int
 	)
 	for _, data := range a.OperatorPath {
-		if data.Priority < minPriority {
-			minPriority = data.Priority
-			indexMinPriority = data.IdxInArray
+		if data.priority < minPriority {
+			minPriority = data.priority
+			indexMinPriority = data.idxInArray
 		}
 	}
 
@@ -49,13 +49,13 @@ func (a *OperatorPath) SplitByIndexString() (OperatorPath, string, OperatorPath)
 	leftPart.DataString = append(leftPart.DataString, a.DataString[:index]...)
 	rightPart.DataString = append(rightPart.DataString, a.DataString[(index+1):]...)
 
-	for i, _ := range a.OperatorPath {
-		if a.OperatorPath[i].IdxInArray == index {
-			opera = a.OperatorPath[i].Name
+	for i := range a.OperatorPath {
+		if a.OperatorPath[i].idxInArray == index {
+			opera = a.OperatorPath[i].name
 			leftPart.OperatorPath = append(leftPart.OperatorPath, a.OperatorPath[:i]...)
 		}
-		if a.OperatorPath[i].IdxInArray > index {
-			newOperator := operator{a.OperatorPath[i].Name, a.OperatorPath[i].IdxInArray - index - 1, a.OperatorPath[i].Priority}
+		if a.OperatorPath[i].idxInArray > index {
+			newOperator := operator{a.OperatorPath[i].name, a.OperatorPath[i].idxInArray - index - 1, a.OperatorPath[i].priority}
 			rightPart.OperatorPath = append(rightPart.OperatorPath, newOperator)
 		}
 	}
@@ -99,7 +99,7 @@ func prioritizationOperation(array []string) []operator {
 
 func (a *OperatorPath) checkSamePriority(index int) bool {
 	for _, data := range a.OperatorPath[(index + 1):] {
-		if a.OperatorPath[index].Priority == data.Priority {
+		if a.OperatorPath[index].priority == data.priority {
 			return true
 		}
 	}
@@ -123,8 +123,8 @@ func (a *OperatorPath) cleanRepeatPriority() {
 	for idx := range a.OperatorPath {
 		for a.checkSamePriority(idx) {
 			for i := range a.OperatorPath[(idx + 1):] {
-				if a.OperatorPath[idx+i+1].Priority >= a.OperatorPath[idx].Priority {
-					a.OperatorPath[idx+i+1].Priority++
+				if a.OperatorPath[idx+i+1].priority >= a.OperatorPath[idx].priority {
+					a.OperatorPath[idx+i+1].priority++
 				}
 			}
 		}
