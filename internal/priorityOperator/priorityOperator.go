@@ -23,7 +23,7 @@ func New(std []string) OperatorPath {
 	return newOperatorPath
 }
 
-func (a *OperatorPath) GetMinIndexPriority() int {
+func (a *OperatorPath) getMinIndexPriority() int {
 	var (
 		minPriority      = 999999999
 		indexMinPriority int
@@ -38,22 +38,24 @@ func (a *OperatorPath) GetMinIndexPriority() int {
 	return indexMinPriority
 }
 
-func (a *OperatorPath) SplitByIndexString(idx int) (OperatorPath, string, OperatorPath) {
+func (a *OperatorPath) SplitByIndexString() (OperatorPath, string, OperatorPath) {
 	var (
 		opera     string
 		leftPart  OperatorPath
 		rightPart OperatorPath
 	)
-	leftPart.DataString = append(leftPart.DataString, a.DataString[:idx]...)
-	rightPart.DataString = append(rightPart.DataString, a.DataString[(idx+1):]...)
+	index := a.getMinIndexPriority()
+
+	leftPart.DataString = append(leftPart.DataString, a.DataString[:index]...)
+	rightPart.DataString = append(rightPart.DataString, a.DataString[(index+1):]...)
 
 	for i, _ := range a.OperatorPath {
-		if a.OperatorPath[i].IdxInArray == idx {
+		if a.OperatorPath[i].IdxInArray == index {
 			opera = a.OperatorPath[i].Name
 			leftPart.OperatorPath = append(leftPart.OperatorPath, a.OperatorPath[:i]...)
 		}
-		if a.OperatorPath[i].IdxInArray > idx {
-			newOperator := operator{a.OperatorPath[i].Name, a.OperatorPath[i].IdxInArray - idx - 1, a.OperatorPath[i].Priority}
+		if a.OperatorPath[i].IdxInArray > index {
+			newOperator := operator{a.OperatorPath[i].Name, a.OperatorPath[i].IdxInArray - index - 1, a.OperatorPath[i].Priority}
 			rightPart.OperatorPath = append(rightPart.OperatorPath, newOperator)
 		}
 	}

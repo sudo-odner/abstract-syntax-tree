@@ -103,8 +103,7 @@ func createBaseArrTree(data priorityOperator.OperatorPath) [][]string {
 		return mainSample
 	}
 
-	idxMinPriority := data.GetMinIndexPriority()
-	leftPart, opera, rightPart := data.SplitByIndexString(idxMinPriority)
+	leftPart, opera, rightPart := data.SplitByIndexString()
 
 	if len(leftPart.DataString) == 1 && len(rightPart.DataString) == 1 {
 		mainSample := make([][]string, 3)

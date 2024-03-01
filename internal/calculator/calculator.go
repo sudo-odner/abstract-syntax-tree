@@ -12,8 +12,7 @@ func baseCalculate(data priorityOperator.OperatorPath) float64 {
 		return dataFloat
 	}
 
-	idxMinPriority := data.GetMinIndexPriority()
-	leftPart, opera, rightPart := data.SplitByIndexString(idxMinPriority)
+	leftPart, opera, rightPart := data.SplitByIndexString()
 	if len(leftPart.DataString) == 1 && len(rightPart.DataString) == 1 {
 		leftPartFloat, _ := strconv.ParseFloat(leftPart.DataString[0], 64)
 		rightPartFloat, _ := strconv.ParseFloat(rightPart.DataString[0], 64)
