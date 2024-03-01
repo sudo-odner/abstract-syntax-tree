@@ -23,19 +23,6 @@ func New(std []string) OperatorPath {
 	return newOperatorPath
 }
 
-func sortArrByFirstIdx(data [][]int64) [][]int64 {
-	for i := 0; i < len(data); i++ {
-		for j := 0; j < (len(data) - i); j++ {
-			if j != 0 {
-				if data[j-1][0] > data[j][0] {
-					data[j-1], data[j] = data[j], data[j-1]
-				}
-			}
-		}
-	}
-	return data
-}
-
 func (a *OperatorPath) GetMinIndexPriority() int {
 	var (
 		minPriority      = 999999999

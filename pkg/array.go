@@ -1,6 +1,6 @@
 package pkg
 
-// Проверяет существует ли елемент в слайсе
+// ExistsInSlice Проверяет существует ли елемент в слайсе
 func ExistsInSlice[T comparable](value T, array []T) bool {
 	for _, valueArray := range array {
 		if valueArray == value {
@@ -8,6 +8,15 @@ func ExistsInSlice[T comparable](value T, array []T) bool {
 		}
 	}
 	return false
+}
+
+func GetFirstIndexValueInSlice[T comparable](value T, array []T) int {
+	for idx := range array {
+		if array[idx] == value {
+			return idx
+		}
+	}
+	return -1
 }
 
 func CreateArrOneElement[T comparable](value T, size int) []T {
@@ -33,7 +42,7 @@ func copy2DArray[T any](array [][]T) [][]T {
 	return newArray
 }
 
-// Транспонирование матрицы
+// Transposition2DArray Транспонирование матрицы
 func Transposition2DArray[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
@@ -76,7 +85,7 @@ func Transposition2DArray[T any](array [][]T) [][]T {
 }
 
 // Разворачивает матрицу по вертикали
-func reverce2DArrayByVertical[T any](array [][]T) [][]T {
+func Reverce2DArrayByVertical[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
 	}
@@ -90,7 +99,7 @@ func reverce2DArrayByVertical[T any](array [][]T) [][]T {
 	return copyArray
 }
 
-// Разворачивает матрицу по горизонтали
+// Reverce2DArrayByHorizontal Разворачивает матрицу по горизонтали
 func Reverce2DArrayByHorizontal[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
