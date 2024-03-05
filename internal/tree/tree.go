@@ -98,6 +98,7 @@ func createBaseArrTree(data priorityOperator.OperatorPath) [][]string {
 	if len(data.DataString) == 1 {
 		mainSample := make([][]string, 1)
 
+		mainSample[0] = append(mainSample[0], " ")
 		mainSample[0] = append(mainSample[0], regex.Split(data.DataString[0], -1)...)
 
 		return mainSample

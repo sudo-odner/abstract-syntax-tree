@@ -119,7 +119,7 @@ func (a *OperatorPath) rotateOperatorPathByHorizontal() {
 
 func (a *OperatorPath) cleanRepeatPriority() {
 
-	a.rotateOperatorPathByHorizontal()
+	// a.rotateOperatorPathByHorizontal()
 	for idx := range a.OperatorPath {
 		for a.checkSamePriority(idx) {
 			for i := range a.OperatorPath {
@@ -129,7 +129,7 @@ func (a *OperatorPath) cleanRepeatPriority() {
 			}
 		}
 	}
-	a.rotateOperatorPathByHorizontal()
+	// a.rotateOperatorPathByHorizontal()
 	a.OperatorPath = slices.Clip(a.OperatorPath)
 }
 
