@@ -122,9 +122,9 @@ func (a *OperatorPath) cleanRepeatPriority() {
 	a.rotateOperatorPathByHorizontal()
 	for idx := range a.OperatorPath {
 		for a.checkSamePriority(idx) {
-			for i := range a.OperatorPath[(idx + 1):] {
-				if a.OperatorPath[idx+i+1].priority >= a.OperatorPath[idx].priority {
-					a.OperatorPath[idx+i+1].priority++
+			for i := range a.OperatorPath {
+				if a.OperatorPath[i].priority >= a.OperatorPath[idx].priority {
+					a.OperatorPath[i].priority++
 				}
 			}
 		}

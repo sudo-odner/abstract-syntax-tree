@@ -10,6 +10,7 @@ func ExistsInSlice[T comparable](value T, array []T) bool {
 	return false
 }
 
+// GetFirstIndexValueInSlice Полуить первое вхождение элемента
 func GetFirstIndexValueInSlice[T comparable](value T, array []T) int {
 	for idx := range array {
 		if array[idx] == value {
@@ -19,6 +20,7 @@ func GetFirstIndexValueInSlice[T comparable](value T, array []T) int {
 	return -1
 }
 
+// CreateArrOneElement Генирирует slice по одному элементу
 func CreateArrOneElement[T comparable](value T, size int) []T {
 	newArray := make([]T, 0, size)
 	for i := 0; i < size; i++ {
@@ -28,8 +30,8 @@ func CreateArrOneElement[T comparable](value T, size int) []T {
 	return newArray
 }
 
-// Копирование матрицы рамером 2
-func copy2DArray[T any](array [][]T) [][]T {
+// Сopy2DArray Копирование матрицы рамером 2
+func Сopy2DArray[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
 	}
@@ -84,12 +86,12 @@ func Transposition2DArray[T any](array [][]T) [][]T {
 	return copyCutArray
 }
 
-// Разворачивает матрицу по вертикали
+// Reverce2DArrayByVertical Разворачивает матрицу по вертикали
 func Reverce2DArrayByVertical[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
 	}
-	copyArray := copy2DArray(array)
+	copyArray := Сopy2DArray(array)
 
 	lenY := len(array)
 	for idxY := range lenY {
@@ -104,7 +106,7 @@ func Reverce2DArrayByHorizontal[T any](array [][]T) [][]T {
 	if len(array) == 0 {
 		return array
 	}
-	copyArray := copy2DArray(array)
+	copyArray := Сopy2DArray(array)
 
 	lenY, lenX := len(array), len(array[0])
 	for idxY := range lenY {
